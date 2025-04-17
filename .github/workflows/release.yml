@@ -1,9 +1,17 @@
-name: Create Release
+name: Manual Release Creator
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag (e.g., v1.0)'
+        required: true
+      release_title:
+        description: 'Title of the release'
+        required: true
+      release_notes:
+        description: 'Description or release notes'
+        required: false
 
 permissions:
   contents: write
@@ -11,7 +19,6 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -19,4 +26,6 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          generate_release_notes: true
+          tag_name: ${{ github.event.inputs.tag_name }}
+          name: ${{ github.event.inputs.release_title }}
+          body: ${{ github.event.inputs.release_notes }}
